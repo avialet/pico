@@ -11,4 +11,5 @@ run([
     todoServiceTests,
     projectServiceTests,
     changeLogTests,
+    parserTests,
 ])
