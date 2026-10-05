@@ -6,10 +6,10 @@ struct TestFailure: Error, CustomStringConvertible {
     let description: String
 }
 
-struct Test {
+struct Test: Sendable {
     let name: String
-    let body: () throws -> Void
-    init(_ name: String, _ body: @escaping () throws -> Void) {
+    let body: @Sendable () throws -> Void
+    init(_ name: String, _ body: @escaping @Sendable () throws -> Void) {
         self.name = name
         self.body = body
     }

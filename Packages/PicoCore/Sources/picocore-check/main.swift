@@ -6,4 +6,9 @@ run([
             expectEqual(PicoCore.version, "0.1.0")
         },
     ]),
+    dayDateTests,
+    recurrenceTests,
+    todoServiceTests,
+    projectServiceTests,
+    changeLogTests,
 ])
