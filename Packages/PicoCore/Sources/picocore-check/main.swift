@@ -12,4 +12,5 @@ run([
     projectServiceTests,
     changeLogTests,
     parserTests,
+    summaryTests,
 ])

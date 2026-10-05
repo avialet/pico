@@ -7,7 +7,7 @@ struct Pico: ParsableCommand {
         commandName: "pico",
         abstract: "Pico, gestionnaire de taches : porte d'entree en ligne de commande.",
         version: PicoCore.version,
-        subcommands: [Version.self],
+        subcommands: [Version.self, Seed.self],
         defaultSubcommand: Version.self
     )
 }

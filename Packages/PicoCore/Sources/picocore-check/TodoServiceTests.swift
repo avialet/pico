@@ -236,3 +236,20 @@ let changeLogTests: (String, [Test]) = ("ChangeLog", [
         try? FileManager.default.removeItem(at: dir)
     },
 ])
+
+let summaryTests: (String, [Test]) = ("Summaries", [
+    Test("checklistAndTagIndex") {
+        let (_, todos, projects, tags) = try makeServices()
+        let p = try projects.createProject("P")
+        let t = try todos.create(title: "x", projectId: p.id)
+        let i = try todos.addChecklistItem("a", to: t.id)
+        try todos.addChecklistItem("b", to: t.id)
+        try todos.setChecklistItem(i.id, done: true)
+        try todos.setTags([try tags.findOrCreate("bureau").id], on: t.id)
+        expectEqual(try todos.checklistIndex()[t.id], Tally(done: 1, total: 2))
+        expectEqual(try todos.tagIndex()[t.id]?.map(\.name), ["bureau"])
+        try todos.create(title: "y", projectId: p.id)
+        try todos.complete(t.id)
+        expectEqual(try projects.progressIndex()[p.id], Tally(done: 1, total: 2))
+    },
+])

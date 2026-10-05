@@ -3,36 +3,41 @@ import PicoCore
 
 struct MainWindow: View {
     @Environment(AppState.self) private var state
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
+
+    private var showPanel: Bool { state.showInspector && !state.selectedTodoIds.isEmpty }
 
     var body: some View {
-        @Bindable var state = state
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+        HStack(spacing: 0) {
             SidebarView()
-                .navigationSplitViewColumnWidth(min: 200, ideal: 230)
-        } detail: {
-            TodoListView()
-                .inspector(isPresented: $state.showInspector) {
-                    TodoInspector()
-                        .inspectorColumnWidth(min: 280, ideal: 320, max: 420)
+                .frame(width: 238)
+            ZStack {
+                AmbientBackground(accent: state.selection.accent)
+                    .animation(.easeInOut(duration: 0.6), value: state.selection)
+                HStack(spacing: 0) {
+                    TodoListView()
+                        .frame(minWidth: 360, maxWidth: .infinity)
+                        .clipped()
+                    if showPanel {
+                        InspectorPanel()
+                            .frame(width: 340)
+                            .layoutPriority(1)
+                            .padding(.top, 40)
+                            .padding([.bottom, .trailing], 16)
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                    }
                 }
+            }
         }
-        .searchable(text: $state.searchText, placement: .toolbar, prompt: "Rechercher")
+        .ignoresSafeArea()
+        .background(Theme.paper)
+        .tint(state.selection.accent)
+        .animation(.spring(response: 0.35, dampingFraction: 0.86), value: showPanel)
         .onChange(of: state.searchText) { _, _ in state.reload() }
         .onChange(of: state.selection) { _, _ in
             state.searchText = ""
             state.selectedTodoIds = []
             state.editingTodoId = nil
             state.reload()
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("Nouvelle tache", systemImage: "plus") { state.newTodo() }
-                    .keyboardShortcut("n", modifiers: .command)
-            }
-            ToolbarItem {
-                Button("Inspecteur", systemImage: "sidebar.trailing") { state.showInspector.toggle() }
-            }
         }
     }
 }

@@ -41,6 +41,7 @@ targets:
         NSCalendarsFullAccessUsageDescription: "Pico affiche vos evenements du jour a cote de vos taches."
         NSAppleEventsUsageDescription: "Pico lit l'URL de la page ou du mail au premier plan pour pre-remplir une tache."
         LSApplicationCategoryType: public.app-category.productivity
+        CFBundleIconFile: AppIcon
     entitlements:
       path: Pico/Resources/Pico.entitlements
       properties:
@@ -50,7 +51,6 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: fr.vialet.pico
         ENABLE_HARDENED_RUNTIME: false
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
   PicoCoreTests:
     type: bundle.unit-test
     platform: macOS

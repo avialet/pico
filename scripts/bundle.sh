@@ -20,9 +20,9 @@ sed -e 's/$(EXECUTABLE_NAME)/Pico/g' \
     -e "s/<string>1.0<\/string>/<string>$VERSION<\/string>/" \
     "$ROOT/Pico/Resources/Info.plist" > "$APP/Contents/Info.plist"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
-if [ -d "$ROOT/Pico/Resources/Assets.xcassets" ] && command -v actool >/dev/null 2>&1; then
-  actool --compile "$APP/Contents/Resources" --platform macosx --minimum-deployment-target 26.0 \
-    --app-icon AppIcon --output-partial-info-plist /dev/null "$ROOT/Pico/Resources/Assets.xcassets" >/dev/null 2>&1 || true
+if [ -f "$ROOT/Pico/Resources/AppIcon.icns" ]; then
+  cp "$ROOT/Pico/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+  /usr/libexec/PlistBuddy -c "Add :CFBundleIconFile string AppIcon" "$APP/Contents/Info.plist" 2>/dev/null || true
 fi
 codesign --force --sign - --entitlements "$ROOT/Pico/Resources/Pico.entitlements" "$APP" 2>&1 | grep -v "replacing existing signature" || true
 echo "-> $APP"

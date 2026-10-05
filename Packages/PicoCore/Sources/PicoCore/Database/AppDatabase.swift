@@ -25,8 +25,15 @@ public final class AppDatabase: Sendable {
         try AppDatabase(writer: DatabaseQueue(), notifiesOtherProcesses: false)
     }
 
-    /// Emplacement standard : ~/Library/Application Support/Pico/pico.sqlite
+    /// Emplacement standard : ~/Library/Application Support/Pico/pico.sqlite,
+    /// ou la variable d'environnement PICO_DB_PATH / l'argument `-PicoDBPath chemin`
+    /// (demo, tests manuels).
     public static var defaultURL: URL {
+        let custom = ProcessInfo.processInfo.environment["PICO_DB_PATH"]
+            ?? UserDefaults.standard.string(forKey: "PicoDBPath")
+        if let custom, !custom.isEmpty {
+            return URL(fileURLWithPath: (custom as NSString).expandingTildeInPath)
+        }
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return support.appendingPathComponent("Pico", isDirectory: true).appendingPathComponent("pico.sqlite")
     }
