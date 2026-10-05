@@ -18,9 +18,6 @@ settings:
 packages:
   PicoCore:
     path: Packages/PicoCore
-  KeyboardShortcuts:
-    url: https://github.com/sindresorhus/KeyboardShortcuts
-    from: "2.0.0"
 targets:
   Pico:
     type: application
@@ -31,7 +28,6 @@ targets:
           - "Resources/Info.plist"
     dependencies:
       - package: PicoCore
-      - package: KeyboardShortcuts
     info:
       path: Pico/Resources/Info.plist
       properties:
