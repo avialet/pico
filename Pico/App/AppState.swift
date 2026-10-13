@@ -257,6 +257,35 @@ final class AppState {
         }
     }
 
+    // MARK: Capture (fenetre flottante)
+
+    /// Cree la tache telle que decrite, sans contexte de liste ni navigation.
+    @discardableResult
+    func capture(_ parsed: ParsedEntry) -> Todo? {
+        guard !parsed.title.isEmpty else { return nil }
+        var created: Todo?
+        run {
+            var entry = parsed
+            if entry.projectId == nil, let name = entry.projectName, !name.isEmpty {
+                entry.projectId = try projects.createProject(name).id
+            }
+            let todo = try todos.create(entry.makeTodo())
+            if !entry.tagNames.isEmpty {
+                try todos.setTags(try entry.tagNames.map { try tags.findOrCreate($0).id }, on: todo.id)
+            }
+            created = todo
+        }
+        return created
+    }
+
+    /// Ou la tache a atterri : "Inbox", "Aujourd'hui", "Ven. 9 oct.", "Migration serveurs"...
+    func destinationLabel(of todo: Todo) -> String {
+        if todo.isSomeday { return "Un jour" }
+        if let d = todo.plannedDate { return d <= today ? "Aujourd'hui" : d.relativeLabel(today: today) }
+        if let p = project(todo.projectId) { return p.name }
+        return todo.isInbox ? "Inbox" : "À tout moment"
+    }
+
     // MARK: Actions sur les taches
 
     func save(_ todo: Todo) { run { try todos.save(todo) } }

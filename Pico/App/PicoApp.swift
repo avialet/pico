@@ -31,21 +31,46 @@ enum AppearanceChoice: String, CaseIterable {
 
 @main
 struct PicoApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var state = AppState.shared
+    @AppStorage("PicoMenuBar") private var menuBarVisible = true
 
     var body: some Scene {
-        WindowGroup("Pico") {
+        Window("Pico", id: "main") {
             MainWindow()
                 .environment(state)
                 .fontDesign(.rounded)
                 .frame(minWidth: 900, minHeight: 580)
                 .onAppear { AppearanceChoice.current.apply() }
+                .captureOpenWindow()
         }
         .windowStyle(.hiddenTitleBar)
         .windowBackgroundDragBehavior(.enabled)
         .defaultSize(width: 1_220, height: 780)
         .commands { PicoCommands(state: state) }
+
+        Settings {
+            SettingsView()
+        }
+
+        MenuBarExtra(isInserted: $menuBarVisible) {
+            MenuBarContent().environment(state)
+        } label: {
+            MenuBarLabel().environment(state)
+        }
     }
+}
+
+private struct CaptureOpenWindow: ViewModifier {
+    @Environment(\.openWindow) private var openWindow
+    func body(content: Content) -> some View {
+        content.onAppear { WindowSummoner.openMainWindow = { openWindow(id: "main") } }
+    }
+}
+
+extension View {
+    /// Memorise l'action d'ouverture de la fenetre principale pour le raccourci global.
+    func captureOpenWindow() -> some View { modifier(CaptureOpenWindow()) }
 }
 
 struct PicoCommands: Commands {
