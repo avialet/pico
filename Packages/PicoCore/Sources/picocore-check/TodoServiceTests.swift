@@ -115,7 +115,7 @@ let todoServiceTests: (String, [Test]) = ("TodoService", [
         let (_, todos, _, _) = try makeServices()
         try todos.create(title: "Relancer le fournisseur", notes: "ticket 48213")
         try todos.create(title: "Autre")
-        expectEqual(try todos.search("clara").count, 1)
+        expectEqual(try todos.search("fourni").count, 1)
         expectEqual(try todos.search("48213").count, 1)
         expectEqual(try todos.search("zzz").count, 0)
     },
