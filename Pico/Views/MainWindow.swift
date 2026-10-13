@@ -14,17 +14,20 @@ struct MainWindow: View {
             ZStack {
                 AmbientBackground(accent: state.selection.accent)
                     .animation(.easeInOut(duration: 0.6), value: state.selection)
-                HStack(spacing: 0) {
-                    TodoListView()
-                        .frame(minWidth: 360, maxWidth: .infinity)
-                        .clipped()
-                    if showPanel {
-                        InspectorPanel()
-                            .frame(width: 340)
-                            .layoutPriority(1)
-                            .padding(.top, 40)
-                            .padding([.bottom, .trailing], 16)
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                VStack(spacing: 0) {
+                    UpdateNotice(updater: .shared)
+                    HStack(spacing: 0) {
+                        TodoListView()
+                            .frame(minWidth: 360, maxWidth: .infinity)
+                            .clipped()
+                        if showPanel {
+                            InspectorPanel()
+                                .frame(width: 340)
+                                .layoutPriority(1)
+                                .padding(.top, 40)
+                                .padding([.bottom, .trailing], 16)
+                                .transition(.move(edge: .trailing).combined(with: .opacity))
+                        }
                     }
                 }
             }

@@ -40,7 +40,6 @@ struct SidebarView: View {
                 .padding(.vertical, 12)
             }
             .scrollIndicators(.never)
-            UpdateBanner(updater: Updater.shared)
             footer
         }
         .background(Theme.sidebar)
