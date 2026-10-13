@@ -43,12 +43,15 @@ final class QuickEntry {
 
     /// Incremente a chaque ouverture, pour redonner le focus au champ.
     private(set) var openCount = 0
+    /// Phrase a afficher a l'ouverture (ex. `pico://new?title=...`).
+    private(set) var prefill = ""
     var isVisible: Bool { panel?.isVisible == true }
     private var panel: QuickEntryPanel?
 
     func toggle() { isVisible ? hide() : show() }
 
-    func show() {
+    func show(prefill: String = "") {
+        self.prefill = prefill
         let panel = self.panel ?? makePanel()
         self.panel = panel
         position(panel)
@@ -105,9 +108,9 @@ struct QuickEntryView: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 14)
-        .onAppear { focused = true }
+        .onAppear { text = entry.prefill; focused = true }
         .onChange(of: entry.openCount) { _, _ in
-            text = ""
+            text = entry.prefill
             confirmation = nil
             focused = true
         }
@@ -168,7 +171,7 @@ struct QuickEntryView: View {
 
             HStack(spacing: 14) {
                 hint("↩", "ajouter")
-                hint("⎋", "fermer")
+                hint("esc", "fermer")
                 Spacer()
                 Text(destinationHint(parsed))
                     .font(Theme.ui(11.5, weight: .semibold))

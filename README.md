@@ -117,8 +117,9 @@ Sans jour ni projet, la tâche arrive dans l'**Inbox**. En collant plusieurs lig
 
 ### Raccourci global et barre des menus
 
-- **⇧⌘Espace** ouvre la fenêtre de capture depuis n'importe quelle app. ↩ ajoute la tâche et referme, ⎋ ferme, un clic ailleurs ferme aussi.
+- **⇧⌘Espace** ouvre la fenêtre de capture depuis n'importe quelle app. ↩ ajoute la tâche et referme, esc ferme, un clic ailleurs ferme aussi.
 - Le raccourci se change dans **Réglages › Raccourci global**. Il doit comporter au moins ⌘, ⌥ ou ⌃. Pico prévient si la combinaison est déjà prise par une autre app.
+- Le lien `pico://new` ouvre la même fenêtre, et `pico://new?title=Appeler%20demain%209h` la préremplit : utile pour un script ou un lanceur. Rien n'est créé tant que vous ne validez pas.
 - Fermer la fenêtre principale ne quitte pas Pico : le raccourci et l'icône de la barre des menus restent actifs. **⌘Q** quitte vraiment.
 - **Réglages › Toujours là** permet d'ouvrir Pico à la connexion et de masquer l'icône de la barre des menus.
 
@@ -193,7 +194,7 @@ Pico en est à ses débuts, mais il est déjà utilisable au quotidien. Prévu e
 - [ ] Événements du Calendrier dans Aujourd'hui et À venir
 - [ ] Palette de commandes ⌘K
 - [ ] Revue hebdomadaire guidée et vues enregistrées (filtres)
-- [ ] Ajout depuis l'extérieur : commande `pico add`, liens `pico://`, Raccourcis et Spotlight
+- [ ] Ajout depuis l'extérieur : commande `pico add`, Raccourcis et Spotlight (le lien `pico://new` existe déjà)
 - [ ] Import de tickets (Jira, Trello, Outlook…) avec lien retour vers l'original, sans doublons
 - [ ] Widgets
 - [ ] Sauvegarde automatique et synchronisation personnelle entre appareils
