@@ -6,6 +6,10 @@ options:
   xcodeVersion: "26.0"
   createIntermediateGroups: true
   generateEmptyDirectories: true
+# Version.xcconfig est ecrit par `make gen` depuis VERSION (MARKETING_VERSION).
+configFiles:
+  Debug: Version.xcconfig
+  Release: Version.xcconfig
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -13,9 +17,12 @@ settings:
     CODE_SIGN_IDENTITY: "-"
     CODE_SIGN_STYLE: Manual
     DEVELOPMENT_TEAM: ""
-    MARKETING_VERSION: "0.1.2"  # a garder egal a VERSION
     CURRENT_PROJECT_VERSION: "1"
 packages:
+  VialetKit:
+    url: https://github.com/avialet/vialetkit.git
+    # Mineur epingle (0.2.x) : en 0.x, un changement cassant du kit monte le mineur.
+    minorVersion: "0.2.1"
   PicoCore:
     path: Packages/PicoCore
 targets:
@@ -27,6 +34,7 @@ targets:
         excludes:
           - "Resources/Info.plist"
     dependencies:
+      - package: VialetKit
       - package: PicoCore
     info:
       path: Pico/Resources/Info.plist
@@ -34,7 +42,7 @@ targets:
         CFBundleDisplayName: Pico
         CFBundleName: Pico
         LSMinimumSystemVersion: "26.0"
-        NSHumanReadableCopyright: "Aurelien Vialet"
+        NSHumanReadableCopyright: "\u00A9 2026 Aur\u00E9lien Vialet" # YAML : \u00A9 = signe copyright
         CFBundleURLTypes:
           - CFBundleURLName: fr.vialet.pico
             CFBundleURLSchemes: [pico]

@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>0.0.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>0</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
@@ -42,6 +42,6 @@
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Pico affiche vos evenements du jour a cote de vos taches.</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Aurelien Vialet</string>
+	<string>&#xA9; 2026 Aur&#xE9;lien Vialet</string>
 </dict>
 </plist>

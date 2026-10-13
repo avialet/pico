@@ -1,29 +1,44 @@
 #!/bin/zsh
 # Assemble build/Pico.app a partir du binaire SwiftPM (.build/<config>/Pico).
+# La version vient de VERSION ; le numero de build (CFBundleVersion) est le nombre de commits
+# (`git rev-list --count HEAD`), a defaut un horodatage AAAAMMJJhhmm. Signature ad hoc par defaut ;
+# CODESIGN_IDENTITY="Developer ID Application: ..." pour une vraie signature.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONFIG="${1:-debug}"
-BIN="$ROOT/.build/$CONFIG/Pico"
-APP="$ROOT/build/Pico.app"
+APP_NAME="Pico"
+BIN="$ROOT/.build/$CONFIG/$APP_NAME"
+APP="$ROOT/build/$APP_NAME.app"
 VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
+IDENTITY="${CODESIGN_IDENTITY:--}"
+BUILD_NUMBER="$(git -C "$ROOT" rev-list --count HEAD 2>/dev/null || date +%Y%m%d%H%M)"
 
+[ -x "$BIN" ] || { echo "$BIN introuvable : la compilation a echoue ?" >&2; exit 1; }
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/Pico"
-# Bundles de ressources SwiftPM (ex. KeyboardShortcuts_KeyboardShortcuts.bundle)
+cp "$BIN" "$APP/Contents/MacOS/$APP_NAME"
+# Bundles de ressources SwiftPM, s'il y en a.
 for b in "$ROOT"/.build/"$CONFIG"/*.bundle(N); do
   [ -d "$b" ] && cp -R "$b" "$APP/Contents/Resources/"
 done
-sed -e 's/$(EXECUTABLE_NAME)/Pico/g' \
+sed -e "s/\$(EXECUTABLE_NAME)/$APP_NAME/g" \
     -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/fr.vialet.pico/g' \
     -e 's/$(DEVELOPMENT_LANGUAGE)/fr/g' \
-    "$ROOT/Pico/Resources/Info.plist" > "$APP/Contents/Info.plist"
+    "$ROOT/$APP_NAME/Resources/Info.plist" > "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
-/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
-if [ -f "$ROOT/Pico/Resources/AppIcon.icns" ]; then
-  cp "$ROOT/Pico/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
-  /usr/libexec/PlistBuddy -c "Add :CFBundleIconFile string AppIcon" "$APP/Contents/Info.plist" 2>/dev/null || true
+if [ -f "$ROOT/$APP_NAME/Resources/AppIcon.icns" ]; then
+  cp "$ROOT/$APP_NAME/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
 fi
-codesign --force --sign - --entitlements "$ROOT/Pico/Resources/Pico.entitlements" "$APP" 2>&1 | grep -v "replacing existing signature" || true
+SIGN_OPTS=()
+[ "$IDENTITY" != "-" ] && SIGN_OPTS=(--options runtime --timestamp)
+# Sans pipe : un echec de codesign arrete le script (set -e) ; sa sortie est filtree apres coup.
+if ! SIGN_LOG="$(codesign --force --sign "$IDENTITY" "${SIGN_OPTS[@]}" \
+    --entitlements "$ROOT/$APP_NAME/Resources/$APP_NAME.entitlements" "$APP" 2>&1)"; then
+  printf '%s\n' "$SIGN_LOG" >&2
+  echo "codesign a echoue" >&2
+  exit 1
+fi
+printf '%s\n' "$SIGN_LOG" | grep -v "replacing existing signature" || true
 echo "-> $APP"

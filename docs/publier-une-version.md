@@ -5,10 +5,16 @@ la mise à jour depuis l'application.
 
 ## Étapes
 
-1. Mettre à jour `VERSION` (`0.2.0`) **et** `PicoCore.version` dans
-   `Packages/PicoCore/Sources/PicoCore/PicoCore.swift` (le script de DMG refuse
-   de continuer si les deux diffèrent), ainsi que `MARKETING_VERSION` dans `project.yml`.
-2. Écrire les notes de version dans `docs/notes/vX.Y.Z.md` (affichées dans l'app et sur GitHub ; sans ce fichier, elles sont générées depuis les commits).
+1. Mettre à jour `VERSION` (par exemple `0.2.0`). C'est le seul endroit où la
+   version est écrite : `scripts/bundle.sh` la copie dans l'Info.plist
+   (`CFBundleShortVersionString`) et l'app la lit dans son bundle. Le numéro de
+   build (`CFBundleVersion`) est le nombre de commits (`git rev-list --count HEAD`),
+   à défaut un horodatage : le panneau À propos affiche « Version 0.2.0 (42) ».
+   Mettre aussi `PicoCore.version` à la même valeur
+   (`Packages/PicoCore/Sources/PicoCore/PicoCore.swift`) : `scripts/make-dmg.sh` refuse
+   de continuer si les deux diffèrent.
+2. Écrire les notes de version dans `docs/notes/vX.Y.Z.md` (affichées dans l'app
+   et sur GitHub ; sans ce fichier, elles sont générées depuis les commits).
 3. `make test` : tout doit passer.
 4. Commit, puis :
 
@@ -17,8 +23,14 @@ la mise à jour depuis l'application.
 
 5. Le workflow `Release` (`.github/workflows/release.yml`) vérifie que le tag
    égale `VERSION`, lance les tests, construit `Pico-0.2.0.dmg` et son
-   empreinte `Pico-0.2.0.dmg.sha256`, puis crée la Release GitHub avec les
-   deux fichiers et des notes générées depuis les commits.
+   empreinte `Pico-0.2.0.dmg.sha256`, puis crée la Release GitHub avec
+   les deux fichiers.
+
+Le DMG s'ouvre sur un volume « Pico » (sans version) : l'app, un lien
+Applications, le fond et la disposition de `scripts/dmg` (`fond.png`, `DS_Store`,
+produits par `make dmg-layout` et committés) et l'icône de l'app comme icône de
+volume. L'app reste à la racine sous le nom `Pico.app` : la mise à jour
+intégrée la cherche là.
 
 ## Sans passer par GitHub Actions
 
@@ -29,17 +41,19 @@ la mise à jour depuis l'application.
 ## Ce que l'application vérifie avant d'installer
 
 - La Release n'est ni un brouillon ni une pré-version, et son tag est une version.
-- Elle contient `Pico-X.Y.Z.dmg` (même version que le tag) et `Pico-X.Y.Z.dmg.sha256`,
-  hébergés sur github.com ou son CDN, en HTTPS.
+- Elle contient `Pico-X.Y.Z.dmg` (même version que le tag) et
+  `Pico-X.Y.Z.dmg.sha256`, hébergés sur github.com ou son CDN, en HTTPS.
 - L'empreinte SHA-256 du DMG téléchargé est celle du fichier `.sha256`.
-- L'app contenue dans le DMG porte l'identifiant `fr.vialet.pico`, la version annoncée,
-  et une signature valide.
+- L'app contenue dans le DMG porte l'identifiant `fr.vialet.pico`, la version
+  annoncée, et une signature valide.
 
-Si une étape échoue, l'application installée n'est pas touchée.
+Si une étape échoue, l'application installée n'est pas touchée. Ce code vit dans
+[VialetKit](https://github.com/avialet/vialetkit) : il n'est pas copié dans l'app.
 
 ## Limite
 
-Pico est signé ad hoc, sans certificat Apple Developer. L'empreinte publiée dans
-la même Release protège d'un fichier corrompu, pas d'un compte GitHub compromis.
-Signer et notariser avec un Developer ID supprimerait cette limite et l'avertissement
-du premier lancement.
+Pico est signé ad hoc, sans certificat Apple Developer. L'empreinte
+publiée dans la même Release protège d'un fichier corrompu, pas d'un compte GitHub
+compromis. Signer et notariser avec un Developer ID supprimerait cette limite et
+l'étape « Ouvrir quand même » du premier lancement : il suffit de définir
+`CODESIGN_IDENTITY` pour `scripts/bundle.sh` et d'ajouter la notarisation au workflow.
