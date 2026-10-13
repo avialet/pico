@@ -30,7 +30,7 @@ extension Updater {
 }
 
 extension HotKeyController {
-    /// ⇧⌘Espace par defaut, comme en 0.1 (meme cle et meme JSON : le raccourci choisi est conserve).
+    /// Maj-Cmd-Espace par defaut, comme en 0.1 (meme cle et meme JSON : le raccourci choisi est conserve).
     static let shared = HotKeyController(defaultsKey: Brand.key("HotKey"), logName: Brand.displayName,
                                          initial: .space([.command, .shift]))
 }
