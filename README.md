@@ -178,13 +178,18 @@ Organisation du dépôt :
 
 | Dossier | Contenu |
 |---|---|
-| `Packages/PicoCore` | Noyau sans interface : modèles, base SQLite ([GRDB](https://github.com/groue/GRDB.swift)), analyse des phrases, récurrence, versions |
-| `Pico` | L'application SwiftUI |
-| `Tools/pico-cli` | Outil en ligne de commande `pico` (embryonnaire) |
-| `scripts` | Assemblage de l'app, du DMG et de l'icône |
-| `docs` | Captures, [publier une version](docs/publier-une-version.md), [tests](docs/tests.md) |
+| `Packages/PicoCore` | Noyau sans interface : modèles, base SQLite ([GRDB](https://github.com/groue/GRDB.swift)), analyse des phrases, récurrence, données de démonstration |
+| `Pico` | L'application SwiftUI ; `App/Brand.swift` porte son identité |
+| `Tools/pico-cli` | Outil en ligne de commande `pico` (embryonnaire : `pico seed` remplit une base de démonstration) |
+| `scripts` | Assemblage de l'app et du DMG habillé (`scripts/dmg` : fond et disposition, `make dmg-layout`) |
+| `docs` | Captures, [publier une version](docs/publier-une-version.md), [tests](docs/tests.md), notes de version |
 
-Publier une version ne demande que de modifier `VERSION` puis de pousser un tag `vX.Y.Z` : la CI construit et publie le DMG, et les utilisateurs reçoivent la mise à jour dans l'app.
+Le socle commun (mises à jour, thème et police, raccourci global, fenêtre flottante, Réglages,
+À propos) vient de [VialetKit](https://github.com/avialet/vialetkit) 0.2. L'icône est la plaque
+de l'affiche, dessinée par `make icon` à partir de `Pico/App/Brand.swift` (teintes et glyphe ;
+le script `scripts/plaque.swift` vit dans le dépôt parent vialetapps). Publier une version ne demande que de
+modifier `VERSION` puis de pousser un tag `vX.Y.Z` : la CI construit et publie le DMG, et
+les utilisateurs reçoivent la mise à jour dans l'app.
 
 ## Feuille de route
 
