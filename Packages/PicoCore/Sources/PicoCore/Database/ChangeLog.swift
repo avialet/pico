@@ -60,7 +60,7 @@ public extension Database {
     private func log<R: SyncedRecord>(_ op: ChangeLogEntry.Op, _ record: R) throws {
         let payload = String(decoding: try payloadEncoder.encode(record), as: UTF8.self)
         let deviceId = try Meta.value("deviceId", in: self) ?? "unknown"
-        var entry = ChangeLogEntry(seq: nil, entity: R.entityName, entityId: record.id, op: op,
+        let entry = ChangeLogEntry(seq: nil, entity: R.entityName, entityId: record.id, op: op,
                                    payload: payload, at: Date(), deviceId: deviceId)
         try entry.insert(self)
     }

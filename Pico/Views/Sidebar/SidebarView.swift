@@ -1,4 +1,5 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
 struct SidebarView: View {
@@ -39,7 +40,7 @@ struct SidebarView: View {
                 .padding(.vertical, 12)
             }
             .scrollIndicators(.never)
-            UpdateBanner()
+            UpdateBanner(updater: Updater.shared)
             footer
         }
         .background(Theme.sidebar)

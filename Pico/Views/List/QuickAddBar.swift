@@ -1,4 +1,5 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
 /// Barre de saisie flottante : une ligne en langage naturel, analysee en direct.
@@ -94,26 +95,26 @@ struct ParsedPreview: View {
                 .font(Theme.ui(12.5, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.trailing, 4)
-            if parsed.isSomeday { Chip(text: "Un jour", icon: "moon.stars.fill", color: Theme.lavender) }
+            if parsed.isSomeday { Chip("Un jour", icon: "moon.stars.fill", color: Theme.lavender) }
             if let d = parsed.plannedDate {
-                Chip(text: d.relativeLabel(today: state.today) + (parsed.plannedSlot == .evening ? " soir" : ""),
+                Chip(d.relativeLabel(today: state.today) + (parsed.plannedSlot == .evening ? " soir" : ""),
                      icon: parsed.plannedSlot == .evening ? "moon.fill" : "sun.max.fill", color: Theme.sun)
             }
-            if let t = parsed.plannedTime { Chip(text: t.timeLabel, icon: "clock", color: Theme.sun) }
-            if let due = parsed.dueDate { Chip(text: "Échéance " + due.relativeLabel(today: state.today), icon: "flag.fill", color: Theme.coral) }
-            if let r = parsed.recurrence { Chip(text: r.label, icon: "repeat", color: Theme.pine) }
+            if let t = parsed.plannedTime { Chip(t.timeLabel, icon: "clock", color: Theme.sun) }
+            if let due = parsed.dueDate { Chip("Échéance " + due.relativeLabel(today: state.today), icon: "flag.fill", color: Theme.coral) }
+            if let r = parsed.recurrence { Chip(r.label, icon: "repeat", color: Theme.pine) }
             if let name = parsed.projectName {
                 if let id = parsed.projectId, let p = state.project(id) {
-                    Chip(text: p.name, icon: "folder.fill", color: Theme.color(for: id))
+                    Chip(p.name, icon: "folder.fill", color: Theme.color(for: id))
                 } else {
-                    Chip(text: "Nouveau projet « \(name) »", icon: "folder.badge.plus", color: Theme.sea)
+                    Chip("Nouveau projet « \(name) »", icon: "folder.badge.plus", color: Theme.sea)
                 }
             }
-            ForEach(parsed.tagNames, id: \.self) { Chip(text: $0, icon: "tag.fill", color: Theme.lavender) }
+            ForEach(parsed.tagNames, id: \.self) { Chip($0, icon: "tag.fill", color: Theme.lavender) }
             if parsed.priority >= 2 {
-                Chip(text: parsed.priority == 3 ? "Urgent" : "Important", icon: "exclamationmark", color: Theme.danger)
+                Chip(parsed.priority == 3 ? "Urgent" : "Important", icon: "exclamationmark", color: Theme.danger)
             }
-            if let m = parsed.durationMinutes { Chip(text: m.durationLabel, icon: "hourglass", color: Theme.inkSoft) }
+            if let m = parsed.durationMinutes { Chip(m.durationLabel, icon: "hourglass", color: Theme.inkSoft) }
         }
     }
 }

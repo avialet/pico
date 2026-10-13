@@ -1,53 +1,33 @@
 import SwiftUI
 import AppKit
+import VialetKit
 import PicoCore
-
-/// Apparence choisie par l'utilisateur (Presentation > Apparence).
-enum AppearanceChoice: String, CaseIterable {
-    case system, light, dark
-
-    var label: String {
-        switch self {
-        case .system: "Comme le système"
-        case .light: "Clair"
-        case .dark: "Sombre"
-        }
-    }
-
-    static var current: AppearanceChoice {
-        AppearanceChoice(rawValue: UserDefaults.standard.string(forKey: "PicoAppearance") ?? "") ?? .system
-    }
-
-    @MainActor
-    func apply() {
-        UserDefaults.standard.set(rawValue, forKey: "PicoAppearance")
-        NSApp.appearance = switch self {
-        case .system: nil
-        case .light: NSAppearance(named: .aqua)
-        case .dark: NSAppearance(named: .darkAqua)
-        }
-    }
-}
 
 @main
 struct PicoApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var state = AppState.shared
-    @AppStorage("PicoMenuBar") private var menuBarVisible = true
+    @AppStorage(Brand.key("MenuBar")) private var menuBarVisible = true
+
+    /// Teintes de l'app avant le premier rendu (et police Bricolage Grotesque des titres).
+    init() { Theme.configure(Brand.palette) }
 
     var body: some Scene {
-        Window("Pico", id: "main") {
+        Window(Brand.displayName, id: "main") {
             MainWindow()
                 .environment(state)
                 .fontDesign(.rounded)
                 .frame(minWidth: 900, minHeight: 580)
-                .onAppear { AppearanceChoice.current.apply() }
+                .onAppear { AppearanceChoice.current(defaultsKey: Brand.key("Appearance")).apply(defaultsKey: Brand.key("Appearance")) }
                 .captureOpenWindow()
         }
         .windowStyle(.hiddenTitleBar)
         .windowBackgroundDragBehavior(.enabled)
         .defaultSize(width: 1_220, height: 780)
-        .commands { PicoCommands(state: state) }
+        .commands {
+            AboutCommands(identity: Brand.identity)
+            PicoCommands(state: state)
+        }
 
         Settings {
             SettingsView()
@@ -59,18 +39,6 @@ struct PicoApp: App {
             MenuBarLabel().environment(state)
         }
     }
-}
-
-private struct CaptureOpenWindow: ViewModifier {
-    @Environment(\.openWindow) private var openWindow
-    func body(content: Content) -> some View {
-        content.onAppear { WindowSummoner.openMainWindow = { openWindow(id: "main") } }
-    }
-}
-
-extension View {
-    /// Memorise l'action d'ouverture de la fenetre principale pour le raccourci global.
-    func captureOpenWindow() -> some View { modifier(CaptureOpenWindow()) }
 }
 
 struct PicoCommands: Commands {
@@ -116,7 +84,7 @@ struct PicoCommands: Commands {
             Button("Afficher le détail") { state.showInspector.toggle() }.keyboardShortcut("i", modifiers: [.command, .option])
             Menu("Apparence") {
                 ForEach(AppearanceChoice.allCases, id: \.self) { choice in
-                    Button(choice.label) { choice.apply() }
+                    Button(choice.label) { choice.apply(defaultsKey: Brand.key("Appearance")) }
                 }
             }
         }

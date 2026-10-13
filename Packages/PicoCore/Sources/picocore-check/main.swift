@@ -13,5 +13,4 @@ run([
     changeLogTests,
     parserTests,
     summaryTests,
-    updateTests,
 ])

@@ -9,10 +9,10 @@ private func frenchFormatter(_ format: String) -> DateFormatter {
 }
 
 extension DayDate {
-    nonisolated(unsafe) static let shortFormatter = frenchFormatter("EEE d MMM")
-    nonisolated(unsafe) static let weekdayFormatter = frenchFormatter("EEEE")
-    nonisolated(unsafe) static let longFormatter = frenchFormatter("EEEE d MMMM")
-    nonisolated(unsafe) static let monthFormatter = frenchFormatter("MMMM yyyy")
+    static let shortFormatter = frenchFormatter("EEE d MMM")
+    static let weekdayFormatter = frenchFormatter("EEEE")
+    static let longFormatter = frenchFormatter("EEEE d MMMM")
+    static let monthFormatter = frenchFormatter("MMMM yyyy")
 
     private var noon: Date { date(atMinutes: 12 * 60) }
 

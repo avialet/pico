@@ -1,4 +1,5 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
 struct MainWindow: View {

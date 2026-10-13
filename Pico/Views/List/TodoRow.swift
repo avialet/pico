@@ -1,4 +1,5 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
 /// Une tache, en carte arrondie.
@@ -39,7 +40,7 @@ struct TodoRow: View {
         .onHover { hovering = $0 }
         .onTapGesture { handleTap() }
         .draggable("todo:" + todo.id.rawValue) {
-            Chip(text: todo.title, icon: "circle", color: accent, filled: true)
+            Chip(todo.title, icon: "circle", color: accent, filled: true)
         }
         .contextMenu { TodoContextMenu(ids: state.selectedTodoIds.contains(todo.id) ? state.selectedTodoIds : [todo.id]) }
         .animation(.easeOut(duration: 0.12), value: hovering)
@@ -119,10 +120,10 @@ struct TodoRow: View {
                 Image(systemName: "text.alignleft").font(.system(size: 10, weight: .bold)).foregroundStyle(Theme.inkFaint)
             }
             if let source = todo.source {
-                Chip(text: (todo.externalKey ?? source).uppercased(), icon: "link", color: Theme.sea)
+                Chip((todo.externalKey ?? source).uppercased(), icon: "link", color: Theme.sea)
             }
             ForEach(state.tagsByTodo[todo.id] ?? []) { tag in
-                Chip(text: tag.name, color: Theme.color(for: tag.id))
+                Chip(tag.name, color: Theme.color(for: tag.id))
             }
         }
         .labelStyle(TightLabelStyle())
@@ -137,14 +138,14 @@ struct TodoRow: View {
                     .foregroundStyle(todo.priority == 3 ? Theme.danger : Theme.sun)
             }
             if let time = todo.plannedTime {
-                Chip(text: time.timeLabel, icon: "clock", color: Theme.inkSoft)
+                Chip(time.timeLabel, icon: "clock", color: Theme.inkSoft)
             }
             if let minutes = todo.durationMinutes {
-                Chip(text: minutes.durationLabel, icon: "hourglass", color: Theme.inkSoft)
+                Chip(minutes.durationLabel, icon: "hourglass", color: Theme.inkSoft)
             }
             if let due = todo.dueDate {
                 let urgent = due <= state.today && !isDone
-                Chip(text: due.relativeLabel(today: state.today), icon: "flag.fill",
+                Chip(due.relativeLabel(today: state.today), icon: "flag.fill",
                      color: urgent ? Theme.danger : Theme.coral, filled: urgent)
             }
             if isDone, let completed = todo.completedAt {

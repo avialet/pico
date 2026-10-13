@@ -1,14 +1,16 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
-/// Icone de la barre des menus ; garde aussi l'action d'ouverture de fenetre.
+/// Icone de la barre des menus (glyphe de Brand) et nombre de taches du jour ;
+/// garde aussi l'action d'ouverture de fenetre.
 struct MenuBarLabel: View {
     @Environment(AppState.self) private var state
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         HStack(spacing: 3) {
-            Image(systemName: "sun.horizon.fill")
+            MenuBarIcon(glyph: Brand.glyph)
             if state.todayCount > 0 { Text("\(state.todayCount)") }
         }
         .onAppear { WindowSummoner.openMainWindow = { openWindow(id: "main") } }
@@ -37,7 +39,7 @@ struct MenuBarContent: View {
         }
         Divider()
         if let release = Updater.shared.available {
-            Button("Installer Pico \(release.version)…") { Updater.shared.install() }
+            Button("Installer Pico \(release.version.description)…") { Updater.shared.install() }
         }
         SettingsLink { Text("Réglages…") }.keyboardShortcut(",")
         Button("Quitter Pico") { NSApp.terminate(nil) }.keyboardShortcut("q")

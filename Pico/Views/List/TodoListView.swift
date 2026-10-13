@@ -1,4 +1,5 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
 struct TodoListView: View {
@@ -121,7 +122,7 @@ struct ListHeader: View {
             HStack(alignment: .center, spacing: 14) {
                 titleIcon
                 Text(title)
-                    .font(Theme.display(36))
+                    .font(Theme.listTitle(36))
                     .foregroundStyle(Theme.ink)
                     .lineLimit(1)
                     .contentTransition(.opacity)
@@ -227,7 +228,7 @@ struct SectionHeader: View {
     private func dayHeader(_ day: DayDate) -> some View {
         HStack(alignment: .lastTextBaseline, spacing: 12) {
             Text("\(day.day)")
-                .font(Theme.display(30))
+                .font(Theme.listTitle(30))
                 .foregroundStyle(state.selection.accent)
                 .frame(minWidth: 40, alignment: .trailing)
             VStack(alignment: .leading, spacing: 0) {
@@ -274,7 +275,7 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: 14) {
             HorizonIllustration(accent: state.selection.accent)
-            Text(message.title).font(Theme.display(22)).foregroundStyle(Theme.ink)
+            Text(message.title).font(Theme.listTitle(22)).foregroundStyle(Theme.ink)
             Text(message.detail)
                 .font(Theme.ui(13))
                 .foregroundStyle(Theme.inkSoft)

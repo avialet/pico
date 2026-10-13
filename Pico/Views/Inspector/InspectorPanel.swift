@@ -1,4 +1,5 @@
 import SwiftUI
+import VialetKit
 import PicoCore
 
 /// Panneau flottant de detail de la tache selectionnee.
@@ -29,14 +30,14 @@ struct MultiSelectionSummary: View {
     var body: some View {
         let ids = state.selectedTodoIds
         VStack(alignment: .leading, spacing: 16) {
-            Text("\(ids.count) tâches").font(Theme.display(24)).foregroundStyle(Theme.ink)
+            Text("\(ids.count) tâches").font(Theme.listTitle(24)).foregroundStyle(Theme.ink)
             Text("Actions groupées").font(Theme.ui(12, weight: .bold)).foregroundStyle(Theme.inkSoft)
             FlowLayout(spacing: 6) {
-                ChipButton(text: "Aujourd'hui", icon: "sun.max.fill", color: Theme.sun, selected: false) { state.plan(state.today, ids: ids) }
-                ChipButton(text: "Demain", icon: "sunrise.fill", color: Theme.sun, selected: false) { state.plan(state.today.adding(days: 1), ids: ids) }
-                ChipButton(text: "Un jour", icon: "moon.stars.fill", color: Theme.lavender, selected: false) { state.moveToSomeday(ids: ids) }
-                ChipButton(text: "Terminer", icon: "checkmark", color: Theme.pine, selected: false) { state.toggleComplete(ids) }
-                ChipButton(text: "Supprimer", icon: "trash", color: Theme.danger, selected: false) { state.delete(ids: ids) }
+                ChipButton("Aujourd'hui", icon: "sun.max.fill", color: Theme.sun, selected: false) { state.plan(state.today, ids: ids) }
+                ChipButton("Demain", icon: "sunrise.fill", color: Theme.sun, selected: false) { state.plan(state.today.adding(days: 1), ids: ids) }
+                ChipButton("Un jour", icon: "moon.stars.fill", color: Theme.lavender, selected: false) { state.moveToSomeday(ids: ids) }
+                ChipButton("Terminer", icon: "checkmark", color: Theme.pine, selected: false) { state.toggleComplete(ids) }
+                ChipButton("Supprimer", icon: "trash", color: Theme.danger, selected: false) { state.delete(ids: ids) }
             }
             Spacer()
         }
@@ -98,7 +99,7 @@ struct TodoEditor: View {
                     .padding(.top, 3)
                 TextField("Titre", text: $draft.title, axis: .vertical)
                     .textFieldStyle(.plain)
-                    .font(Theme.display(21))
+                    .font(Theme.listTitle(21))
                     .foregroundStyle(Theme.ink)
                     .lineLimit(1...4)
             }
@@ -114,22 +115,22 @@ struct TodoEditor: View {
     private var when: some View {
         group("Quand", icon: "sun.max.fill", color: Theme.sun) {
             FlowLayout(spacing: 6) {
-                ChipButton(text: "Aujourd'hui", icon: "sun.max.fill", color: Theme.sun,
+                ChipButton("Aujourd'hui", icon: "sun.max.fill", color: Theme.sun,
                            selected: draft.plannedDate == state.today && draft.plannedSlot == .day) { setPlanned(state.today, .day) }
-                ChipButton(text: "Ce soir", icon: "moon.fill", color: Theme.lavender,
+                ChipButton("Ce soir", icon: "moon.fill", color: Theme.lavender,
                            selected: draft.plannedDate == state.today && draft.plannedSlot == .evening) { setPlanned(state.today, .evening) }
-                ChipButton(text: "Demain", icon: "sunrise.fill", color: Theme.sun,
+                ChipButton("Demain", icon: "sunrise.fill", color: Theme.sun,
                            selected: draft.plannedDate == state.today.adding(days: 1)) { setPlanned(state.today.adding(days: 1), .day) }
-                ChipButton(text: "Week-end", icon: "beach.umbrella.fill", color: Theme.coral,
+                ChipButton("Week-end", icon: "beach.umbrella.fill", color: Theme.coral,
                            selected: draft.plannedDate == weekend) { setPlanned(weekend, .day) }
-                ChipButton(text: "Lundi", icon: "briefcase.fill", color: Theme.sea,
+                ChipButton("Lundi", icon: "briefcase.fill", color: Theme.sea,
                            selected: draft.plannedDate == nextMonday) { setPlanned(nextMonday, .day) }
-                ChipButton(text: customDateLabel, icon: "calendar", color: Theme.coral, selected: isCustomDate) { pickingPlanned = true }
+                ChipButton(customDateLabel, icon: "calendar", color: Theme.coral, selected: isCustomDate) { pickingPlanned = true }
                     .popover(isPresented: $pickingPlanned) { datePopover(selection: plannedDateBinding) }
-                ChipButton(text: "Un jour", icon: "moon.stars.fill", color: Theme.lavender, selected: draft.isSomeday) {
+                ChipButton("Un jour", icon: "moon.stars.fill", color: Theme.lavender, selected: draft.isSomeday) {
                     draft.plannedDate = nil; draft.isSomeday = true; draft.isInbox = false
                 }
-                ChipButton(text: "Sans date", icon: "circle.dashed", color: Theme.stone,
+                ChipButton("Sans date", icon: "circle.dashed", color: Theme.stone,
                            selected: draft.plannedDate == nil && !draft.isSomeday) {
                     draft.plannedDate = nil; draft.isSomeday = false
                 }
@@ -143,7 +144,7 @@ struct TodoEditor: View {
                         Button { draft.plannedTime = nil } label: { Image(systemName: "xmark.circle.fill") }
                             .buttonStyle(.plain).foregroundStyle(Theme.inkFaint)
                     } else {
-                        ChipButton(text: "Ajouter une heure", icon: "clock", color: Theme.sun, selected: false) {
+                        ChipButton("Ajouter une heure", icon: "clock", color: Theme.sun, selected: false) {
                             draft.plannedTime = 9 * 60
                         }
                     }
@@ -156,13 +157,13 @@ struct TodoEditor: View {
         group("Échéance", icon: "flag.fill", color: Theme.coral) {
             HStack(spacing: 6) {
                 if let d = draft.dueDate {
-                    ChipButton(text: d.relativeLabel(today: state.today), icon: "flag.fill",
+                    ChipButton(d.relativeLabel(today: state.today), icon: "flag.fill",
                                color: d <= state.today ? Theme.danger : Theme.coral, selected: true) { pickingDue = true }
                         .popover(isPresented: $pickingDue) { datePopover(selection: dueDateBinding) }
                     Button { draft.dueDate = nil } label: { Image(systemName: "xmark.circle.fill") }
                         .buttonStyle(.plain).foregroundStyle(Theme.inkFaint)
                 } else {
-                    ChipButton(text: "Ajouter une échéance", icon: "plus", color: Theme.coral, selected: false) { pickingDue = true }
+                    ChipButton("Ajouter une échéance", icon: "plus", color: Theme.coral, selected: false) { pickingDue = true }
                         .popover(isPresented: $pickingDue) { datePopover(selection: dueDateBinding) }
                 }
             }
@@ -178,7 +179,7 @@ struct TodoEditor: View {
                     Button(RecurrenceRule(string: rule)?.label ?? rule) { draft.recurrenceRule = rule }
                 }
             } label: {
-                Chip(text: draft.recurrence?.label ?? "Jamais", icon: "repeat",
+                Chip(draft.recurrence?.label ?? "Jamais", icon: "repeat",
                      color: draft.recurrence == nil ? Theme.inkSoft : Theme.pine, filled: draft.recurrence != nil)
             }
             .menuStyle(.button)
@@ -204,14 +205,14 @@ struct TodoEditor: View {
                     }
                 } label: {
                     let p = state.project(draft.projectId)
-                    Chip(text: p?.name ?? "Aucun projet", icon: "folder.fill",
+                    Chip(p?.name ?? "Aucun projet", icon: "folder.fill",
                          color: p.map { Theme.color(for: $0.id) } ?? Theme.inkSoft, filled: p != nil)
                 }
                 .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden).fixedSize()
 
                 FlowLayout(spacing: 6) {
                     ForEach([(0, "Normale"), (2, "Importante"), (3, "Urgente")], id: \.0) { value, label in
-                        ChipButton(text: label, icon: value == 0 ? "minus" : "exclamationmark",
+                        ChipButton(label, icon: value == 0 ? "minus" : "exclamationmark",
                                    color: value == 3 ? Theme.danger : value == 2 ? Theme.sun : Theme.stone,
                                    selected: draft.priority == value || (value == 0 && draft.priority == 1)) {
                             draft.priority = value
@@ -220,7 +221,7 @@ struct TodoEditor: View {
                 }
                 FlowLayout(spacing: 6) {
                     ForEach([15, 30, 60, 120, 240], id: \.self) { m in
-                        ChipButton(text: m.durationLabel, icon: nil, color: Theme.stone, selected: draft.durationMinutes == m) {
+                        ChipButton(m.durationLabel, icon: nil, color: Theme.stone, selected: draft.durationMinutes == m) {
                             draft.durationMinutes = draft.durationMinutes == m ? nil : m
                         }
                     }
