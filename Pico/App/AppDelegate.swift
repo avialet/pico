@@ -8,7 +8,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         #if DEBUG
         // Mode capture : ni raccourci global, ni reseau.
         if runSnapshotIfRequested() { return }
+        if writeHubManifestIfRequested() { return }
         #endif
+        AppActions.shared.publish()
         WindowSummoner.onFocus = { AppState.shared.focusQuickAdd() }
         HotKeyController.shared.start { QuickEntry.shared.toggle() }
         // Laisse l'app s'afficher avant le moindre appel reseau.
@@ -18,15 +20,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Liens `pico://` : `pico://new` ouvre la fenetre de saisie d'une tache,
-    /// `pico://new?title=...` la preremplit (rien n'est cree sans validation).
+    /// `pico://new?title=...` la preremplit (rien n'est cree sans validation), `pico://today` montre
+    /// Aujourd'hui, `pico://update` verifie les mises a jour ; le reste montre la fenetre.
     func application(_ application: NSApplication, open urls: [URL]) {
-        for url in urls where url.scheme == "pico" {
-            switch url.host {
-            case "new":
-                let title = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-                    .queryItems?.first { $0.name == "title" }?.value ?? ""
+        for url in urls where url.scheme?.lowercased() == "pico" {
+            if url.host?.lowercased() == "new",
+               let title = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                   .queryItems?.first(where: { $0.name == "title" })?.value {
                 QuickEntry.shared.show(prefill: String(title.prefix(300)))
-            default: WindowSummoner.show()
+            } else if !AppActions.shared.handle(url) {
+                WindowSummoner.show()
             }
         }
     }
@@ -41,10 +44,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 #if DEBUG
+extension AppDelegate {
+    /// `Pico -PicoHubManifest <dossier>` : ecrit la fiche pour Vialet dans le dossier (sans la condition
+    /// du dossier Applications, sans prevenir Vialet), imprime son chemin et quitte.
+    func writeHubManifestIfRequested() -> Bool {
+        guard let path = UserDefaults.standard.string(forKey: Brand.key("HubManifest")) else { return false }
+        let directory = URL(fileURLWithPath: path, isDirectory: true)
+        do {
+            try AppActions.shared.manifest().write(to: directory)
+            print("fiche : \(HubManifest.fileURL(bundleIdentifier: Brand.identity.bundleIdentifier, in: directory).path)")
+        } catch {
+            print("fiche non ecrite : \(error)")
+        }
+        exit(0)
+    }
+}
+
 /// Mode capture sans ecran (voir SnapshotRunner) : `Pico -PicoSnapshot <dossier> [-PicoSnapshotSeed 1]
 /// [-PicoSnapshotAppearance dark] [-PicoSnapshotOnly a,b] [-PicoSnapshotSize 1220x780]`, avec PICO_DB_PATH
 /// vers une base jetable. Ecrit `mainWindow` (Aujourd'hui), `settings`, `about`, `aVenir`, `projet`,
-/// `detail` (tache ouverte dans le panneau de detail) et `floatingPanel` (saisie rapide preremplie),
+/// `detail` (tache ouverte dans le panneau de detail), `floatingPanel` (saisie rapide preremplie),
+/// `actionToday` et `actionNew` (actions rapides `pico://today` et `pico://new`),
 /// `-sombre` en sombre, dans le dossier, puis quitte.
 extension AppDelegate {
     func runSnapshotIfRequested() -> Bool {
@@ -71,6 +91,18 @@ extension AppDelegate {
             SnapshotScenario("detail") {
                 try await Self.show(.today, selecting: "Pr\u{00E9}parer la d\u{00E9}mo de la recette")
                 return main()
+            },
+            // Actions rapides de Vialet, par leur URL : `pico://today` depuis A venir, `pico://new`.
+            SnapshotScenario("actionToday") {
+                try await Self.show(.upcoming)
+                AppActions.shared.handle(URL(string: "pico://today")!)
+                try await Task.sleep(for: .seconds(1))
+                return main()
+            },
+            SnapshotScenario("actionNew") {
+                AppActions.shared.handle(URL(string: "pico://new")!)
+                try await Task.sleep(for: .seconds(1))
+                return NSApp.windows.first { $0 is FloatingPanel && $0.isVisible }
             },
             SnapshotScenario("floatingPanel") {
                 QuickEntry.shared.show(prefill: "Appeler le comptable vendredi 10h @appel ~20m")
