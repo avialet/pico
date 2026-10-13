@@ -10,57 +10,17 @@ struct TodoListView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ListHeader()
-                            .padding(.horizontal, 38)
-                            .padding(.top, 50)
-                            .padding(.bottom, 20)
-
-                        if state.visibleTodos.isEmpty {
-                            EmptyStateView()
-                                .frame(maxWidth: .infinity)
-                                .padding(.top, 70)
+            if state.snapshotLayout {
+                // Mode capture : le rendu par calques de WindowSnapshot ne dessine pas ce ScrollView.
+                listContent.frame(minHeight: 0, maxHeight: .infinity, alignment: .top).clipped()
+            } else {
+                ScrollViewReader { proxy in
+                    ScrollView { listContent }
+                        .scrollIndicators(.automatic)
+                        .onChange(of: state.flashTodoId) { _, id in
+                            guard let id else { return }
+                            withAnimation(.snappy) { proxy.scrollTo(id, anchor: .center) }
                         }
-
-                        LazyVStack(alignment: .leading, spacing: 1) {
-                            ForEach(state.sections) { section in
-                                if section.title != nil {
-                                    SectionHeader(section: section)
-                                        .padding(.horizontal, 16)
-                                        .padding(.top, 22)
-                                        .padding(.bottom, 6)
-                                }
-                                ForEach(section.todos) { todo in
-                                    TodoRow(todo: todo, accent: accent)
-                                        .id(todo.id)
-                                        .dropDestination(for: String.self) { items, _ in
-                                            guard let raw = items.first, raw.hasPrefix("todo:") else { return false }
-                                            state.drop(EntityID(String(raw.dropFirst(5))), before: todo.id, in: section)
-                                            return true
-                                        }
-                                }
-                                if section.todos.isEmpty && section.title != nil {
-                                    Text("Rien ici pour l'instant")
-                                        .font(Theme.ui(12.5))
-                                        .foregroundStyle(Theme.inkFaint)
-                                        .padding(.leading, 50)
-                                        .padding(.vertical, 8)
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 22)
-
-                        Color.clear.frame(height: 130)
-                    }
-                    .frame(maxWidth: 820, alignment: .leading)
-                    .frame(maxWidth: .infinity)
-                }
-                .scrollIndicators(.automatic)
-                .onChange(of: state.flashTodoId) { _, id in
-                    guard let id else { return }
-                    withAnimation(.snappy) { proxy.scrollTo(id, anchor: .center) }
                 }
             }
 
@@ -84,6 +44,53 @@ struct TodoListView: View {
             if !ids.isEmpty, state.editingTodoId == nil, !state.quickAddFocused { listFocused = true }
         }
         .animation(.snappy(duration: 0.28), value: state.visibleTodos.map(\.id))
+    }
+
+    private var listContent: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ListHeader()
+                .padding(.horizontal, 38)
+                .padding(.top, 50)
+                .padding(.bottom, 20)
+
+            if state.visibleTodos.isEmpty {
+                EmptyStateView()
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 70)
+            }
+
+            LazyVStack(alignment: .leading, spacing: 1) {
+                ForEach(state.sections) { section in
+                    if section.title != nil {
+                        SectionHeader(section: section)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 22)
+                            .padding(.bottom, 6)
+                    }
+                    ForEach(section.todos) { todo in
+                        TodoRow(todo: todo, accent: accent)
+                            .id(todo.id)
+                            .dropDestination(for: String.self) { items, _ in
+                                guard let raw = items.first, raw.hasPrefix("todo:") else { return false }
+                                state.drop(EntityID(String(raw.dropFirst(5))), before: todo.id, in: section)
+                                return true
+                            }
+                    }
+                    if section.todos.isEmpty && section.title != nil {
+                        Text("Rien ici pour l'instant")
+                            .font(Theme.ui(12.5))
+                            .foregroundStyle(Theme.inkFaint)
+                            .padding(.leading, 50)
+                            .padding(.vertical, 8)
+                    }
+                }
+            }
+            .padding(.horizontal, 22)
+
+            Color.clear.frame(height: 130)
+        }
+        .frame(maxWidth: 820, alignment: .leading)
+        .frame(maxWidth: .infinity)
     }
 
     private func handleKey(_ press: KeyPress) -> KeyPress.Result {
