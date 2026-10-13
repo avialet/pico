@@ -34,6 +34,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Notes écrites à la main si docs/notes/<tag>.md existe, sinon générées depuis les commits.
+          if [ -f "docs/notes/${GITHUB_REF_NAME}.md" ]; then NOTES=(--notes-file "docs/notes/${GITHUB_REF_NAME}.md"); else NOTES=(--generate-notes); fi
           gh release create "${GITHUB_REF_NAME}" \
             "build/Pico-${VERSION}.dmg" "build/Pico-${VERSION}.dmg.sha256" \
-            --title "Pico ${VERSION}" --generate-notes
+            --title "Pico ${VERSION}" "${NOTES[@]}"

@@ -8,13 +8,14 @@ la mise à jour depuis l'application.
 1. Mettre à jour `VERSION` (`0.2.0`) **et** `PicoCore.version` dans
    `Packages/PicoCore/Sources/PicoCore/PicoCore.swift` (le script de DMG refuse
    de continuer si les deux diffèrent), ainsi que `MARKETING_VERSION` dans `project.yml`.
-2. `make test` : tout doit passer.
-3. Commit, puis :
+2. Écrire les notes de version dans `docs/notes/vX.Y.Z.md` (affichées dans l'app et sur GitHub ; sans ce fichier, elles sont générées depuis les commits).
+3. `make test` : tout doit passer.
+4. Commit, puis :
 
        git tag v0.2.0
        git push && git push --tags
 
-4. Le workflow `Release` (`.github/workflows/release.yml`) vérifie que le tag
+5. Le workflow `Release` (`.github/workflows/release.yml`) vérifie que le tag
    égale `VERSION`, lance les tests, construit `Pico-0.2.0.dmg` et son
    empreinte `Pico-0.2.0.dmg.sha256`, puis crée la Release GitHub avec les
    deux fichiers et des notes générées depuis les commits.

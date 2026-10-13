@@ -3,7 +3,7 @@ import PicoCore
 run([
     ("Smoke", [
         Test("versionIsSet") {
-            expectEqual(PicoCore.version, "0.1.0")
+            expectEqual(PicoCore.version, "0.1.1")
         },
     ]),
     dayDateTests,
