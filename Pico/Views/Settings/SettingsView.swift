@@ -49,6 +49,10 @@ struct SettingsView: View {
                     .font(Theme.ui(12)).foregroundStyle(Theme.inkSoft)
             }
 
+            card(icon: "arrow.down.circle", color: Theme.coral, title: "Mises à jour") {
+                UpdateCard()
+            }
+
             card(icon: "circle.lefthalf.filled", color: Theme.lavender, title: "Apparence") {
                 Picker("", selection: $appearance) {
                     ForEach(AppearanceChoice.allCases, id: \.self) { Text($0.label).tag($0) }

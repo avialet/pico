@@ -6,7 +6,7 @@ DERIVED := $(BUILD_DIR)/DerivedData
 CORE := Packages/PicoCore
 HAS_XCODE := $(shell xcodebuild -version >/dev/null 2>&1 && echo yes || echo no)
 
-.PHONY: gen build xcode-build spm-build run install test core-test cli clean
+.PHONY: gen build xcode-build spm-build run install release test core-test cli clean
 
 gen:
 	xcodegen generate
@@ -43,6 +43,12 @@ install:
 	rm -rf $(INSTALL_DIR)/Pico.app
 	cp -R $(BUILD_DIR)/Pico.app $(INSTALL_DIR)/Pico.app
 	open $(INSTALL_DIR)/Pico.app
+
+# Version distribuable : build/Pico-X.Y.Z.dmg + .sha256 (voir docs/publier-une-version.md).
+release:
+	swift build -c release --product Pico 2>&1 | grep -E "error|Build" || true
+	scripts/bundle.sh release
+	scripts/make-dmg.sh
 
 # Tests du noyau : fonctionne avec les seuls Command Line Tools.
 core-test:

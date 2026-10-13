@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONFIG="${1:-debug}"
 BIN="$ROOT/.build/$CONFIG/Pico"
 APP="$ROOT/build/Pico.app"
-VERSION="$(grep -m1 MARKETING_VERSION "$ROOT/project.yml" | sed 's/.*"\(.*\)".*/\1/')"
+VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
@@ -17,8 +17,9 @@ done
 sed -e 's/$(EXECUTABLE_NAME)/Pico/g' \
     -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/fr.vialet.pico/g' \
     -e 's/$(DEVELOPMENT_LANGUAGE)/fr/g' \
-    -e "s/<string>1.0<\/string>/<string>$VERSION<\/string>/" \
     "$ROOT/Pico/Resources/Info.plist" > "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 if [ -f "$ROOT/Pico/Resources/AppIcon.icns" ]; then
   cp "$ROOT/Pico/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"

@@ -36,6 +36,9 @@ struct MenuBarContent: View {
             if today.count > 8 { Text("… et \(today.count - 8) autres") }
         }
         Divider()
+        if let release = Updater.shared.available {
+            Button("Installer Pico \(release.version)…") { Updater.shared.install() }
+        }
         SettingsLink { Text("Réglages…") }.keyboardShortcut(",")
         Button("Quitter Pico") { NSApp.terminate(nil) }.keyboardShortcut("q")
     }

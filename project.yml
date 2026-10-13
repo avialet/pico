@@ -13,7 +13,7 @@ settings:
     CODE_SIGN_IDENTITY: "-"
     CODE_SIGN_STYLE: Manual
     DEVELOPMENT_TEAM: ""
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "0.1.0"  # a garder egal a VERSION
     CURRENT_PROJECT_VERSION: "1"
 packages:
   PicoCore:

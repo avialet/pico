@@ -2,7 +2,13 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        MainActor.assumeIsolated { HotKeyController.shared.start() }
+        MainActor.assumeIsolated {
+            HotKeyController.shared.start()
+            // Laisse l'app s'afficher avant le moindre appel reseau.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                MainActor.assumeIsolated { Updater.shared.checkAutomatically() }
+            }
+        }
     }
 
     /// Pico reste disponible (raccourci global, barre des menus) fenetre fermee.
