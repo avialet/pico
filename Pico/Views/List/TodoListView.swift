@@ -8,21 +8,29 @@ struct TodoListView: View {
 
     private var accent: Color { state.selection.accent }
 
+    private var scrollingList: some View {
+        ScrollViewReader { proxy in
+            ScrollView { listContent }
+                .scrollIndicators(.automatic)
+                .onChange(of: state.flashTodoId) { _, id in
+                    guard let id else { return }
+                    withAnimation(.snappy) { proxy.scrollTo(id, anchor: .center) }
+                }
+        }
+    }
+
     var body: some View {
         ZStack(alignment: .bottom) {
+            #if DEBUG
             if state.snapshotLayout {
                 // Mode capture : le rendu par calques de WindowSnapshot ne dessine pas ce ScrollView.
                 listContent.frame(minHeight: 0, maxHeight: .infinity, alignment: .top).clipped()
             } else {
-                ScrollViewReader { proxy in
-                    ScrollView { listContent }
-                        .scrollIndicators(.automatic)
-                        .onChange(of: state.flashTodoId) { _, id in
-                            guard let id else { return }
-                            withAnimation(.snappy) { proxy.scrollTo(id, anchor: .center) }
-                        }
-                }
+                scrollingList
             }
+            #else
+            scrollingList
+            #endif
 
             LinearGradient(colors: [Theme.paper.opacity(0), Theme.paper.opacity(0.92)],
                            startPoint: .top, endPoint: .bottom)

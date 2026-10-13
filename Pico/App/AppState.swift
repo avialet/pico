@@ -60,8 +60,10 @@ final class AppState {
     var editingTodoId: EntityID?
     var searchText = ""
     var showInspector = true
-    /// Mode capture (DEBUG) : liste posee sans ScrollView, que le rendu par calques ne dessine pas.
+    #if DEBUG
+    /// Mode capture : liste posee sans ScrollView, que le rendu par calques ne dessine pas.
     var snapshotLayout = false
+    #endif
     var quickAddFocused = false
     /// Incremente pour demander le focus (saisie rapide, recherche).
     var quickAddFocusRequest = 0
