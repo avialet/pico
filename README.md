@@ -8,7 +8,7 @@
 
 Tapez une phrase, Pico comprend la date, l'heure, le projet, la priorité. Une journée claire, sans pile rouge de retards. Vos données restent sur votre Mac.
 
-[![Dernière version](https://img.shields.io/github/v/release/avialet/pico?color=2F6FEB&label=version)](https://github.com/avialet/pico/releases/latest)
+[![Dernière version](https://img.shields.io/github/v/release/avialet/pico?color=F0A020&label=version)](https://github.com/avialet/pico/releases/latest)
 [![macOS 26](https://img.shields.io/badge/macOS-26%20Tahoe-F0A020)](#installation)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-2E9D6E)](LICENSE)
 
