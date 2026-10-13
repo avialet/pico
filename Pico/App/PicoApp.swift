@@ -26,6 +26,7 @@ struct PicoApp: App {
         .defaultSize(width: 1_220, height: 780)
         .commands {
             AboutCommands(identity: Brand.identity)
+            UpdateCommands(updater: .shared)
             PicoCommands(state: state)
         }
 
