@@ -12,7 +12,7 @@ Tapez une phrase, Pico comprend la date, l'heure, le projet, la priorité. Une j
 [![macOS 26](https://img.shields.io/badge/macOS-26%20Tahoe-F0A020)](#installation)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-2E9D6E)](LICENSE)
 
-[**Télécharger le DMG**](https://github.com/avialet/pico/releases/latest) · [Notice](#notice) · [Feuille de route](#feuille-de-route)
+[**Télécharger le DMG**](https://github.com/avialet/pico/releases/latest) · [Site](https://pico.vialet.app) · [Notice](#notice) · [Feuille de route](#feuille-de-route)
 
 <img src="docs/screenshots/aujourdhui-clair.png" width="900" alt="Pico, liste Aujourd'hui en mode clair">
 
