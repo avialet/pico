@@ -47,6 +47,7 @@ struct SettingsView: View {
                 Toggle("Icône dans la barre des menus", isOn: $menuBarVisible)
                 Text("Fermer la fenêtre ne quitte pas Pico : le raccourci reste actif. ⌘Q pour quitter.")
                     .font(Theme.ui(12)).foregroundStyle(Theme.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             card(icon: "arrow.down.circle", color: Theme.coral, title: "Mises à jour") {
@@ -111,7 +112,7 @@ struct ShortcutRecorder: View {
     var body: some View {
         Button { recording ? stop() : start() } label: {
             HStack(spacing: 8) {
-                Image(systemName: recording ? "record.circle" : "command")
+                Image(systemName: recording ? "record.circle" : "keyboard")
                     .font(.system(size: 11, weight: .bold))
                     .symbolEffect(.pulse, isActive: recording)
                 Text(recording ? (invalid ? "Ajoutez ⌘, ⌥ ou ⌃…" : "Tapez le raccourci…") : controller.shortcut.display)
