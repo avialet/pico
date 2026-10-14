@@ -37,6 +37,8 @@
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
+	<key>LSUIElement</key>
+	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Pico lit l'URL de la page ou du mail au premier plan pour pre-remplir une tache.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
